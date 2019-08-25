@@ -2,6 +2,7 @@ import { StoreState, storeStateInit } from '../types';
 import { Reducer } from 'redux';
 import * as ACTION from '../constants';
 import { BindAction } from '../action';
+import Point from '../../utils/Point';
 
 /**
  *
@@ -13,10 +14,20 @@ const initState = (prevState: StoreState) => {
 };
 
 /**
+ *
+ * @param prevState
+ * @param point
+ */
+const setScreenSize = (prevState: StoreState, point: Point): StoreState => {
+    return { ...prevState, screenSize: point };
+};
+
+/**
  * Action Mapping
  */
 const actionMapping: { [key: string]: (prevState: StoreState, action: any) => StoreState } = {
     [ACTION.INIT_STATE]: initState,
+    [ACTION.SET_SCREEN_SIZE]: setScreenSize,
 };
 
 /**

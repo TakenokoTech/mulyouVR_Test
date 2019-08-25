@@ -45,7 +45,11 @@ const development = {
     // devServer: {
     //     public: "c72f14ca.ngrok.io",
     // },
-    devtool: "inline-source-map"
+    devtool: "inline-source-map",
+    devServer: {
+        host: '0.0.0.0',
+        disableHostCheck: true
+    }
 };
 
 const production = {
