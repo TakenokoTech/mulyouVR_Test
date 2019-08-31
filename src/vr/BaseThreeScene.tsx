@@ -2,9 +2,10 @@ import React from 'react';
 import * as THREE from 'three';
 import OrbitControls from 'three-orbitcontrols';
 import WebVRPolyfill from 'webvr-polyfill';
-import { WEBVR } from '../utils/WebVR';
-import { StoreState } from '../store/types';
+
 import { getVRDisplays } from '../extension';
+import { StoreState } from '../store/types';
+import { WEBVR } from '../utils/WebVR';
 
 export interface BaseThreeSceneProps {
     id: string;
@@ -18,7 +19,7 @@ export interface BaseThreeSceneState {
 
 export default abstract class BaseThreeScene<P extends BaseThreeSceneProps, S extends BaseThreeSceneState, SS = any> extends React.Component<P, S> {
     public scene = new THREE.Scene();
-    public camera: THREE.Camera = new THREE.Camera();
+    public camera: THREE.PerspectiveCamera = new THREE.PerspectiveCamera();
     public renderer: THREE.WebGLRenderer = new THREE.WebGLRenderer();
     public controls: OrbitControls;
 
@@ -52,8 +53,8 @@ export default abstract class BaseThreeScene<P extends BaseThreeSceneProps, S ex
                     this.controls = this.createControls();
                 }
             });
-            this.setupObj();
-            this.renderer.setAnimationLoop(this.update);
+            this.onCreate();
+            this.renderer.setAnimationLoop(this.onUpdate);
         }
         return true;
     }
@@ -68,7 +69,7 @@ export default abstract class BaseThreeScene<P extends BaseThreeSceneProps, S ex
     };
 
     private createCamera(x: number, y: number): THREE.PerspectiveCamera {
-        const camera = new THREE.PerspectiveCamera(90, x / y);
+        const camera = new THREE.PerspectiveCamera(45, x / y);
         const cameraContainer = new THREE.Object3D();
         cameraContainer.add(camera);
         this.scene.add(cameraContainer);
@@ -78,7 +79,7 @@ export default abstract class BaseThreeScene<P extends BaseThreeSceneProps, S ex
 
     private createControls(): OrbitControls {
         const controls = new OrbitControls(this.camera);
-        controls.target.set(0, 75, 100);
+        controls.target.set(0, 0, 0);
         //controls.enableKeys = false;
         return controls;
     }
@@ -98,6 +99,6 @@ export default abstract class BaseThreeScene<P extends BaseThreeSceneProps, S ex
         return renderer;
     }
 
-    protected abstract update(): void;
-    protected abstract setupObj(): void;
+    protected abstract onUpdate(): void;
+    protected abstract onCreate(): void;
 }

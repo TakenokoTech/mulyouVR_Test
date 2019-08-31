@@ -27,7 +27,7 @@ export default class TestScene extends BaseThreeScene<TestSceneProps, TestSceneS
         return s;
     }
 
-    protected update = () => {
+    protected onUpdate = () => {
         const length = this.hierarchy.boxList.length;
         for (let i = 0; i < length; i++) {
             this.hierarchy.boxList[i].position.y = 125 + 100 * Math.cos(this.time * 0.0005 * i + i / 10);
@@ -36,7 +36,7 @@ export default class TestScene extends BaseThreeScene<TestSceneProps, TestSceneS
         this.renderer.render(this.scene, this.camera);
     };
 
-    protected setupObj = () => {
+    protected onCreate = () => {
         // 光源を作成
         {
             const spotLight = new THREE.SpotLight(0xffffff, 4, 2000, Math.PI / 5, 0.2, 1.5);

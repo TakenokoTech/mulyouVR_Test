@@ -1,0 +1,7 @@
+{
+    "files.exclude": {
+        "node_modules/": true
+    },
+    "mocha.enabled": true,
+    "importSorter.generalConfiguration.sortOnBeforeSave": true
+}

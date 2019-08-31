@@ -7,6 +7,7 @@ import { domSize } from '../extension';
 import Point from '../utils/Point';
 import TestScene from '../vr/TestScene';
 import TheaterScene from '../vr/TheaterScene';
+import MainScene from '../vr/MainScene';
 
 interface AppContainerProps extends MapDispatchProps, StoreState {
     query: ParsedQuery<string>;
@@ -33,7 +34,7 @@ export class AppContainer extends React.Component<AppContainerProps, AppContaine
     render() {
         return (
             <div id="container" className="app-container" ref="frame" style={{ position: 'relative', width: '100%', height: '100%' }}>
-                <TheaterScene id="vr-canvas-theater" store={this.props} resize={this.resize} />
+                <MainScene id="vr-canvas-theater" store={this.props} resize={this.resize} />
                 {/* <TestScene id="vr-canvas-test" store={this.props} resize={this.resize} /> */}
                 {/* <div id="vr-overlay" style={{ position: 'relative' }} /> */}
             </div>

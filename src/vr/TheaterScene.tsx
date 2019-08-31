@@ -1,12 +1,14 @@
+import 'webvr-polyfill';
+
 import React from 'react';
 import ReactDOM from 'react-dom';
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import { CSS3DObject, CSS3DRenderer } from 'three/examples/jsm/renderers/CSS3DRenderer';
-import { BaseThreeSceneProps, BaseThreeSceneState } from './BaseThreeScene';
-import { WebGLRenderer } from 'three';
+
 import { getVRDisplays } from '../extension';
 import { WEBVR } from '../utils/WebVR';
+import { BaseThreeSceneProps, BaseThreeSceneState } from './BaseThreeScene';
 
 interface TheaterProps extends BaseThreeSceneProps {}
 interface TheaterState extends BaseThreeSceneState {}
@@ -40,8 +42,15 @@ export default class TheaterScene extends React.Component<TheaterProps, TheaterS
             root.appendChild(this.renderer2.domElement);
         }
 
-        this.setupObj();
-        this.update();
+        /*
+        const controls = new VRControls(this.camera);
+        const effect = new VREffect(this.renderer2);
+        effect.setSize(window.innerWidth, window.innerHeight);
+        this.manager = new WebVRManager(this.renderer, effect);
+        */
+
+        this.onCreate();
+        this.onUpdate();
     }
 
     shouldComponentUpdate(nextProps: TheaterProps, nextState: TheaterState, nextContext: any) {
@@ -89,14 +98,14 @@ export default class TheaterScene extends React.Component<TheaterProps, TheaterS
         return renderer;
     }
 
-    protected update = () => {
-        requestAnimationFrame(this.update);
+    protected onUpdate = () => {
+        requestAnimationFrame(this.onUpdate);
         this.controls && this.controls.update();
         // this.renderer.render(this.scene, this.camera);
         this.renderer2.render(this.scene2, this.camera);
     };
 
-    protected setupObj = () => {
+    protected onCreate = () => {
         {
             [
                 this.createPlane(100, 100, 'chocolate', new THREE.Vector3(-50, 0, 0), new THREE.Euler(0, -90 * THREE.Math.DEG2RAD, 0)),

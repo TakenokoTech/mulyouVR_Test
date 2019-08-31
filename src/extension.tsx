@@ -16,3 +16,10 @@ export function getVRDisplays(): Promise<VRDisplay[]> {
             .catch(e => resolve([]));
     });
 }
+
+export function asyncForeach(i: number, j: number, func: (i: number, j: number) => void) {
+    for (let x1 = 0; x1 < i; x1++)
+        for (let x2 = 0; x2 < j; x2++) {
+            (async () => func(x1, x2))();
+        }
+}

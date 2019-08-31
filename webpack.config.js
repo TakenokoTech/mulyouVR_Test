@@ -36,18 +36,18 @@ const development = {
     plugins: [
         new HtmlWebpackPlugin({ template: "./static/index.html" }),
         // new CopyWebpackPlugin([{ from: ".", to: ".", ignore: ["!*.html"] }], { context: "static" }),
-        // new CopyWebpackPlugin([{ from: ".", to: "./css", ignore: ["!*.css"] }], { context: "static/css" }),
+        new CopyWebpackPlugin([{ from: ".", to: "./css", ignore: ["!*.css"] }], { context: "static/css" }),
         // new CopyWebpackPlugin([{ from: ".", to: "./js", ignore: ["!*.js"] }], { context: "static/js" }),
-        // new CopyWebpackPlugin([{ from: ".", to: "./assets", ignore: ["!*"] }], { context: "static/assets" }),
+        new CopyWebpackPlugin([{ from: ".", to: "./assets", ignore: ["!*"] }], { context: "static/assets" }),
         // new CopyWebpackPlugin([{ from: ".", to: "./", ignore: ["!sw.js"] }], { context: "static/" }),
-        // new CopyWebpackPlugin([{ from: ".", to: "./", ignore: ["!manifest.json"] }], { context: "static/" }),
+        new CopyWebpackPlugin([{ from: ".", to: "./", ignore: ["!manifest.json"] }], { context: "static/" }),
     ],
     // devServer: {
     //     public: "c72f14ca.ngrok.io",
     // },
     devtool: "inline-source-map",
     devServer: {
-        host: '0.0.0.0',
+        // host: '0.0.0.0',
         disableHostCheck: true
     }
 };
@@ -68,11 +68,11 @@ const production = {
     plugins: [
         new HtmlWebpackPlugin({ template: "./static/index.html" }),
         // new CopyWebpackPlugin([{ from: ".", to: ".", ignore: ["!*.html"] }], { context: "static" }),
-        // new CopyWebpackPlugin([{ from: ".", to: "./css", ignore: ["!*.css"] }], { context: "static/css" }),
+        new CopyWebpackPlugin([{ from: ".", to: "./css", ignore: ["!*.css"] }], { context: "static/css" }),
         // new CopyWebpackPlugin([{ from: ".", to: "./js", ignore: ["!*.js"] }], { context: "static/js" }),
-        // new CopyWebpackPlugin([{ from: ".", to: "./assets", ignore: ["!*"] }], { context: "static/assets" }),
+        new CopyWebpackPlugin([{ from: ".", to: "./assets", ignore: ["!*"] }], { context: "static/assets" }),
         // new CopyWebpackPlugin([{ from: ".", to: "./", ignore: ["!sw.js"] }], { context: "static/" }),
-        // new CopyWebpackPlugin([{ from: ".", to: "./", ignore: ["!manifest.json"] }], { context: "static/" }),
+        new CopyWebpackPlugin([{ from: ".", to: "./", ignore: ["!manifest.json"] }], { context: "static/" }),
     ]
 };
 
