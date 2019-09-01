@@ -1,11 +1,5 @@
-import React from 'react';
 import * as THREE from 'three';
-import OrbitControls from 'three-orbitcontrols';
-import WebVRPolyfill from 'webvr-polyfill';
-import { WEBVR } from '../utils/WebVR';
-import { StoreState } from '../store/types';
-import { resolve } from 'dns';
-import { getVRDisplays } from '../extension';
+
 import BaseThreeScene, { BaseThreeSceneProps, BaseThreeSceneState } from './BaseThreeScene';
 
 interface TestSceneProps extends BaseThreeSceneProps {}

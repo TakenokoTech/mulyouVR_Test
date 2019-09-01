@@ -3,9 +3,10 @@ import * as THREE from 'three';
 import OrbitControls from 'three-orbitcontrols';
 import WebVRPolyfill from 'webvr-polyfill';
 
-import { getVRDisplays } from '../extension';
-import { StoreState } from '../store/types';
-import { WEBVR } from '../utils/WebVR';
+import { getVRDisplays } from '../../extension';
+import { StoreState } from '../../store/types';
+import { WEBVR } from '../../utils/WebVR';
+import { CustomWebGLRenderer } from '../render/CustomWebGLRenderer';
 
 export interface BaseThreeSceneProps {
     id: string;
@@ -17,10 +18,10 @@ export interface BaseThreeSceneState {
     VRDisplays: VRDisplay[];
 }
 
-export default abstract class BaseThreeScene<P extends BaseThreeSceneProps, S extends BaseThreeSceneState, SS = any> extends React.Component<P, S> {
+export default abstract class BaseThreeScene<P extends BaseThreeSceneProps, S extends BaseThreeSceneState> extends React.Component<P, S> {
     public scene = new THREE.Scene();
     public camera: THREE.PerspectiveCamera = new THREE.PerspectiveCamera();
-    public renderer: THREE.WebGLRenderer = new THREE.WebGLRenderer();
+    public renderer: CustomWebGLRenderer = new CustomWebGLRenderer();
     public controls: OrbitControls;
 
     protected time = 0;
@@ -29,9 +30,12 @@ export default abstract class BaseThreeScene<P extends BaseThreeSceneProps, S ex
     constructor(props: P) {
         super(props);
         const polyfill = new WebVRPolyfill();
+
+        this.shouldComponentUpdate = this.shouldComponentUpdate.bind(this);
     }
 
     componentDidMount() {
+        console.log('componentDidMount');
         window.addEventListener('resize', this.props.resize);
         setInterval(() => (this.time += 5), 30);
     }
@@ -53,6 +57,7 @@ export default abstract class BaseThreeScene<P extends BaseThreeSceneProps, S ex
                     this.controls = this.createControls();
                 }
             });
+            this.renderer.customSetSize(next.x, next.y, this.refs.divElement as HTMLDivElement, this.refs.cameraElement as HTMLDivElement);
             this.onCreate();
             this.renderer.setAnimationLoop(this.onUpdate);
         }
@@ -60,7 +65,17 @@ export default abstract class BaseThreeScene<P extends BaseThreeSceneProps, S ex
     }
 
     render() {
-        return <canvas id={this.props.id} width="1000" height="1000" />;
+        return (
+            <>
+                <canvas id={this.props.id} width="1000" height="1000" />
+                <div id="element" ref="element" style={{ position: 'fixed', top: '0px' }} />
+                <div id={this.props.id + '_div'} ref="div3D" style={{ position: 'fixed', top: '0px', left: '0px' }}>
+                    <div ref="divElement" style={{ overflow: 'hidden' }}>
+                        <div ref="cameraElement" style={{ transformStyle: 'preserve-3d' }}></div>
+                    </div>
+                </div>
+            </>
+        );
     }
 
     private createVrButton = () => {
@@ -73,7 +88,9 @@ export default abstract class BaseThreeScene<P extends BaseThreeSceneProps, S ex
         const cameraContainer = new THREE.Object3D();
         cameraContainer.add(camera);
         this.scene.add(cameraContainer);
-        cameraContainer.position.y = 100;
+        cameraContainer.position.y = 30;
+        cameraContainer.position.z = 80; //100;
+        cameraContainer.rotation.x = -15 * THREE.Math.DEG2RAD;
         return camera;
     }
 
@@ -84,13 +101,9 @@ export default abstract class BaseThreeScene<P extends BaseThreeSceneProps, S ex
         return controls;
     }
 
-    private createRenderer(x: number, y: number): THREE.WebGLRenderer {
+    private createRenderer(x: number, y: number): CustomWebGLRenderer {
         const canvas = document.querySelector('#' + this.props.id) as HTMLCanvasElement;
-        const renderer = new THREE.WebGLRenderer({
-            canvas: canvas,
-            antialias: true,
-            alpha: true,
-        });
+        const renderer = new CustomWebGLRenderer({ canvas: canvas, antialias: true, alpha: true });
         renderer.setSize(x, y);
         renderer.setClearColor(0x0005, 1);
         // renderer.setPixelRatio(1);

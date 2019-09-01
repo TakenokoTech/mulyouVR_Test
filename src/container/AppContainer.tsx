@@ -1,13 +1,13 @@
-import React from 'react';
-import queryString, { ParsedQuery } from 'query-string';
 import './AppContainer.css';
-import { MapDispatchProps } from './BindingAppContainer';
-import { StoreState } from '../store/types';
+
+import { ParsedQuery } from 'query-string';
+import React from 'react';
+
 import { domSize } from '../extension';
+import { StoreState } from '../store/types';
 import Point from '../utils/Point';
-import TestScene from '../vr/TestScene';
-import TheaterScene from '../vr/TheaterScene';
-import MainScene from '../vr/MainScene';
+import MainScene from '../vr/scene/MainScene';
+import { MapDispatchProps } from './BindingAppContainer';
 
 interface AppContainerProps extends MapDispatchProps, StoreState {
     query: ParsedQuery<string>;

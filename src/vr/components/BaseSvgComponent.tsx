@@ -4,26 +4,26 @@ import * as THREE from 'three';
 
 const svgMap: { [key: string]: HTMLElement } = {};
 
-interface BaseSvgProps {
+export interface BaseSvgProps {
     color: string;
     image: HTMLImageElement;
 }
 
-interface BaseSvgState {}
+export interface BaseSvgState {}
 
-export default class BaseSvgComponent extends React.Component<BaseSvgProps, BaseSvgState> {
+export default abstract class BaseSvgComponent<P extends BaseSvgProps, S extends BaseSvgState> extends React.Component<P, S> {
     componentDidMount() {
-        console.log('componentDidMount');
         this.onLoad();
     }
 
-    componentDidUpdate?(nextProps: BaseSvgProps, nextState: BaseSvgState, nextContext: any) {
+    componentDidUpdate?(nextProps: P, nextState: S, nextContext: any) {
+        // console.log(this.state, this.props);
         this.onLoad();
         return true;
     }
 
-    onLoad() {
-        const svg = (this.refs.svg as Element).innerHTML;
+    onLoad(intercept: (() => string) | null = null) {
+        const svg = intercept ? intercept() : (this.refs.svg as Element).innerHTML;
         const uri = `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svg)}`;
         this.props.image.src = uri;
     }
@@ -61,43 +61,31 @@ export default class BaseSvgComponent extends React.Component<BaseSvgProps, Base
     public static makeSVG(key: string, option: any = {}): Promise<{ el: HTMLCanvasElement; uri: string }> {
         return new Promise(resolve => {
             const id = `svg__${key}`;
-            var canvas = document.createElement('canvas') as HTMLCanvasElement;
-            var ctx = canvas.getContext('2d') as CanvasRenderingContext2D;
-            var image = new Image();
+            const image = new Image();
             image.onload = () => {
-                ctx.drawImage(image, 0, 0);
+                const canvas = document.createElement('canvas') as HTMLCanvasElement;
+                (canvas.getContext('2d') as CanvasRenderingContext2D).drawImage(image, 0, 0);
                 resolve({ el: canvas, uri: image.src });
             };
             if (!svgMap[id]) {
-                const element = document.getElementById('temp') as Element;
                 const children = document.createElement('div');
                 children.id = id;
-                ReactDOM.render(<this image={image} color="#F00" {...option} />, element.appendChild(children));
                 svgMap[id] = children;
+                const element = document.getElementById('temp') as Element;
+                ReactDOM.render(<this image={image} color={`#F00`} {...option} />, element.appendChild(svgMap[id]));
             } else {
                 const element = document.getElementById('temp') as Element;
                 ReactDOM.render(<this image={image} color={`#FF0`} {...option} />, element.appendChild(svgMap[id]));
-                /*
-                const iframe = svgMap[id].getElementsByTagName('svg')[0].getElementById('iframe') as HTMLIFrameElement;
-                try {
-                    const svg = iframe.ownerDocument.getElementById('inframe').innerHTML;
-                    const uri = `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svg)}`;
-                    image.src = uri;
-                    console.log(uri);
-                    // const ownerDocument = iframe.contentWindow.document.body;
-                    // console.log(iframe.contentWindow.document);
-                } catch (e) {}
-                */
             }
         });
     }
 
-    public static async canvasToTexture(key: string): Promise<THREE.Texture> {
-        return Promise.resolve(new THREE.TextureLoader().load((await this.makeSVG(key)).uri));
+    public static async canvasToTexture(key: string, option: any = {}): Promise<THREE.Texture> {
+        return Promise.resolve(new THREE.TextureLoader().load((await this.makeSVG(key, option)).uri));
     }
 
-    public static async makeTexture(key: string): Promise<THREE.Texture> {
-        const texture = new THREE.Texture((await this.makeSVG(key)).el);
+    public static async makeTexture(key: string, option: any = {}): Promise<THREE.Texture> {
+        const texture = new THREE.Texture((await this.makeSVG(key, option)).el);
         texture.minFilter = THREE.LinearFilter;
         texture.needsUpdate = true;
         return Promise.resolve(texture);

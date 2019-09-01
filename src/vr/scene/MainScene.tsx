@@ -2,8 +2,10 @@ import React from 'react';
 import * as THREE from 'three';
 import { SVGLoader } from 'three/examples/jsm/loaders/SVGLoader.js';
 
-import { asyncForeach } from '../extension';
-import BaseSvgComponent from './BaseSvgComponent';
+import { asyncForeach } from '../../extension';
+import BaseSvgComponent from '../components/BaseSvgComponent';
+import YotubeSvgComponent from '../components/YoutubeSvgComponent';
+import { Element3DObject } from '../render/CustomWebGLRenderer';
 import BaseThreeScene, { BaseThreeSceneProps, BaseThreeSceneState } from './BaseThreeScene';
 
 interface MainSceneProps extends BaseThreeSceneProps {}
@@ -35,13 +37,14 @@ export default class MainScene extends BaseThreeScene<MainSceneProps, MainSceneS
 
     protected onUpdate = () => {
         this.controls && this.controls.update();
-        this.renderer.render(this.scene, this.camera);
+        this.renderer.customRender(this.scene, this.camera);
         asyncForeach(4, 4, async (i, j) => {
             const name = `${i * 10 + j}`;
             const mesh = this.scene.getObjectByName(name) as THREE.Mesh;
             if (mesh && mesh.material) {
                 const map = await BaseSvgComponent.makeTexture(name);
-                (mesh.material as THREE.MeshBasicMaterial) = new THREE.MeshBasicMaterial({ map: map, side: THREE.DoubleSide });
+                mesh.material = new THREE.MeshStandardMaterial({ map: map, side: THREE.DoubleSide, roughness: 0.1, metalness: 0.5 });
+                // (mesh.material as THREE.MeshBasicMaterial) = new THREE.MeshBasicMaterial({ map: map, side: THREE.DoubleSide });
                 (mesh.material as THREE.MeshBasicMaterial).needsUpdate = true;
             }
         });
@@ -84,9 +87,10 @@ export default class MainScene extends BaseThreeScene<MainSceneProps, MainSceneS
                 }
             }
             this.hierarchy.boxList = boxList;
-        */
+            */
         }
         {
+            /*
             var loader = new SVGLoader();
             loader.load(
                 // this.makeSVGurl(),
@@ -114,17 +118,19 @@ export default class MainScene extends BaseThreeScene<MainSceneProps, MainSceneS
                     this.scene.add(group);
                 },
             );
+            */
         }
         {
             // 立方体
-            // const geometry = new THREE.BoxGeometry(10, 10, 10);
-            const geometry = new THREE.PlaneGeometry(10, 10, 10, 10);
+            const geometry = new THREE.BoxGeometry(10, 10, 10);
+            // const geometry = new THREE.PlaneGeometry(10, 10, 10, 10);
             const num = 4;
             this.hierarchy.boxList = [];
             asyncForeach(num, num, async (i, j) => {
                 const name = `${i * 10 + j}`;
                 const map = await BaseSvgComponent.makeTexture(name);
-                const material = new THREE.MeshBasicMaterial({ map: map, side: THREE.DoubleSide });
+                const material = new THREE.MeshStandardMaterial({ map: map, side: THREE.DoubleSide, roughness: 0.1, metalness: 0.5 });
+                //const material = new THREE.MeshBasicMaterial({ map: map, side: THREE.DoubleSide });
                 const box = new THREE.Mesh(geometry, material);
                 box.name = name;
                 box.position.x = 20 * (j - num / 2);
@@ -134,14 +140,40 @@ export default class MainScene extends BaseThreeScene<MainSceneProps, MainSceneS
                 this.hierarchy.boxList.push(box);
             });
         }
-    };
+        {
+            /*
+            // 立方体
+            const geometry = new THREE.BoxGeometry(10, 10, 10);
+            // const geometry = new THREE.PlaneGeometry(10, 10, 10, 10);
+            const num = 4;
+            this.hierarchy.boxList = [];
+            asyncForeach(num, num, async (i, j) => {
+                const name = `youtube_${i * 10 + j}`;
+                const map = await YotubeSvgComponent.makeTexture(name, { videoId: 'aaaaaa' });
+                const material = new THREE.MeshStandardMaterial({ map: map, side: THREE.DoubleSide, roughness: 0.1, metalness: 0.5 });
+                //const material = new THREE.MeshBasicMaterial({ map: map, side: THREE.DoubleSide });
+                const box = new THREE.Mesh(geometry, material);
+                box.name = name;
+                box.position.x = 20 * (j - num / 2);
+                box.position.y = 5;
+                box.position.z = 20 * (i - num / 2);
+                this.scene.add(box);
+                this.hierarchy.boxList.push(box);
+            });
+            */
+        }
+        {
+            var element = document.createElement('div') as HTMLDivElement;
+            element.id = 'sample';
+            element.style.width = 10 + 'px';
+            element.style.height = 10 + 'px';
+            element.style.opacity = '0.75';
+            element.style.background = 'chocolate';
 
-    render() {
-        return (
-            <>
-                <canvas id={this.props.id} width="1000" height="1000" />
-                <div id="element" ref="element" style={{ position: 'fixed', top: '0px' }} />
-            </>
-        );
-    }
+            var object = new Element3DObject(element);
+            object.position.copy(new THREE.Vector3(0, 0, 0));
+            object.rotation.copy(new THREE.Euler(45 * THREE.Math.DEG2RAD, 45 * THREE.Math.DEG2RAD, 0));
+            this.scene.add(object);
+        }
+    };
 }

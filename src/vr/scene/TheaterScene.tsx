@@ -6,8 +6,8 @@ import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import { CSS3DObject, CSS3DRenderer } from 'three/examples/jsm/renderers/CSS3DRenderer';
 
-import { getVRDisplays } from '../extension';
-import { WEBVR } from '../utils/WebVR';
+import { getVRDisplays } from '../../extension';
+import { WEBVR } from '../../utils/WebVR';
 import { BaseThreeSceneProps, BaseThreeSceneState } from './BaseThreeScene';
 
 interface TheaterProps extends BaseThreeSceneProps {}
@@ -18,7 +18,7 @@ export default class TheaterScene extends React.Component<TheaterProps, TheaterS
     controls: OrbitControls;
     scene: THREE.Scene = new THREE.Scene();
     scene2: THREE.Scene = new THREE.Scene();
-    renderer: WebGLRenderer = new WebGLRenderer();
+    renderer: THREE.WebGLRenderer = new THREE.WebGLRenderer();
     renderer2: CSS3DRenderer = new CSS3DRenderer();
 
     constructor(props: TheaterProps) {
@@ -80,7 +80,7 @@ export default class TheaterScene extends React.Component<TheaterProps, TheaterS
         container.appendChild(WEBVR.createButton(this.renderer));
     };
 
-    private createWebGLRenderer(): WebGLRenderer {
+    private createWebGLRenderer(): THREE.WebGLRenderer {
         const renderer = new THREE.WebGLRenderer({
             antialias: true,
             alpha: true,

@@ -1,5 +1,5 @@
-import ReactDOM from 'react-dom';
 import { ReactInstance } from 'react';
+import ReactDOM from 'react-dom';
 
 export function domSize(ref: ReactInstance) {
     const node = ReactDOM.findDOMNode(ref) as Element;
@@ -23,3 +23,5 @@ export function asyncForeach(i: number, j: number, func: (i: number, j: number) 
             (async () => func(x1, x2))();
         }
 }
+
+export const epsilon = (value: number) => (Math.abs(value) < 1e-10 ? 0 : value);
