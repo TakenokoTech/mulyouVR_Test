@@ -3,7 +3,7 @@ import * as THREE from 'three';
 import OrbitControls from 'three-orbitcontrols';
 import WebVRPolyfill from 'webvr-polyfill';
 
-import { getVRDisplays } from '../../extension';
+import { getVRDisplays, GUIVR } from '../../extension';
 import { StoreState } from '../../store/types';
 import { WEBVR } from '../../utils/WebVR';
 import { CustomWebGLRenderer } from '../render/CustomWebGLRenderer';
@@ -26,6 +26,7 @@ export default abstract class BaseThreeScene<P extends BaseThreeSceneProps, S ex
 
     protected time = 0;
     protected hierarchy: { [key: string]: THREE.Object3D[] } = {};
+    private gui: Object3D;
 
     constructor(props: P) {
         super(props);
@@ -55,6 +56,7 @@ export default abstract class BaseThreeScene<P extends BaseThreeSceneProps, S ex
                 } else {
                     this.renderer.vr.enabled = false;
                     this.controls = this.createControls();
+                    this.makeGui();
                 }
             });
             this.renderer.customSetSize(next.x, next.y, this.refs.divElement as HTMLDivElement, this.refs.cameraElement as HTMLDivElement);
@@ -88,8 +90,8 @@ export default abstract class BaseThreeScene<P extends BaseThreeSceneProps, S ex
         const cameraContainer = new THREE.Object3D();
         cameraContainer.add(camera);
         this.scene.add(cameraContainer);
-        cameraContainer.position.y = 30;
-        cameraContainer.position.z = 80; //100;
+        cameraContainer.position.y = this.renderer.vr.enabled ? 20 : 100;
+        cameraContainer.position.z = this.renderer.vr.enabled ? 80 : 0;
         cameraContainer.rotation.x = -15 * THREE.Math.DEG2RAD;
         return camera;
     }
@@ -114,4 +116,52 @@ export default abstract class BaseThreeScene<P extends BaseThreeSceneProps, S ex
 
     protected abstract onUpdate(): void;
     protected abstract onCreate(): void;
+
+    makeGui = () => {
+        this.gui = new GUIVR.create('OrbitControls');
+        GUIVR.enableMouse(this.camera);
+        this.gui.position.set(0, 20, 0);
+        this.gui.scale.set(50, 50, 50);
+        this.scene.add(this.gui);
+        //this.gui.add(this.camera, 'castShadow');
+        this.gui
+            .add(this.controls.target, 'x', -300, 300)
+            .name('Orbit Target X')
+            .listen();
+        this.gui
+            .add(this.controls.target, 'y', -300, 300)
+            .name('Orbit Target Y')
+            .listen();
+        this.gui
+            .add(this.controls.target, 'z', -300, 300)
+            .name('Orbit Target Z')
+            .listen();
+        this.gui
+            .add(this.camera.position, 'x', -300, 300)
+            .name('Camera Position X')
+            .listen();
+        this.gui
+            .add(this.camera.position, 'y', -300, 300)
+            .name('Camera Position Y')
+            .listen();
+        this.gui
+            .add(this.camera.position, 'z', -300, 300)
+            .name('Camera Position Z')
+            .listen();
+        this.gui
+            .add(this.camera.rotation, 'x', -Math.PI, Math.PI)
+            .step(0.01)
+            .name('Camera Rotation X')
+            .listen();
+        this.gui
+            .add(this.camera.rotation, 'y', -Math.PI, Math.PI)
+            .step(0.01)
+            .name('Camera Rotation Y')
+            .listen();
+        this.gui
+            .add(this.camera.rotation, 'z', -Math.PI, Math.PI)
+            .step(0.01)
+            .name('Camera Rotation Z')
+            .listen();
+    };
 }

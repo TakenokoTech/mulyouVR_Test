@@ -1,5 +1,10 @@
 import { ReactInstance } from 'react';
 import ReactDOM from 'react-dom';
+import * as THREE from 'three';
+
+window.THREE = THREE;
+
+export const GUIVR = require('datguivr').default;
 
 export function domSize(ref: ReactInstance) {
     const node = ReactDOM.findDOMNode(ref) as Element;

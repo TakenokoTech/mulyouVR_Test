@@ -121,6 +121,7 @@ export default class MainScene extends BaseThreeScene<MainSceneProps, MainSceneS
             */
         }
         {
+            /*
             // 立方体
             const geometry = new THREE.BoxGeometry(10, 10, 10);
             // const geometry = new THREE.PlaneGeometry(10, 10, 10, 10);
@@ -139,6 +140,7 @@ export default class MainScene extends BaseThreeScene<MainSceneProps, MainSceneS
                 this.scene.add(box);
                 this.hierarchy.boxList.push(box);
             });
+            */
         }
         {
             /*
