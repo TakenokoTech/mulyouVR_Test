@@ -1,3 +1,5 @@
+import './BaseThreeScene.css';
+
 import React from 'react';
 import * as THREE from 'three';
 import OrbitControls from 'three-orbitcontrols';
@@ -16,6 +18,7 @@ export interface BaseThreeSceneProps {
 
 export interface BaseThreeSceneState {
     VRDisplays: VRDisplay[];
+    isFullscrren: boolean;
 }
 
 export default abstract class BaseThreeScene<P extends BaseThreeSceneProps, S extends BaseThreeSceneState> extends React.Component<P, S> {
@@ -31,7 +34,6 @@ export default abstract class BaseThreeScene<P extends BaseThreeSceneProps, S ex
     constructor(props: P) {
         super(props);
         const polyfill = new WebVRPolyfill();
-
         this.shouldComponentUpdate = this.shouldComponentUpdate.bind(this);
     }
 
@@ -49,6 +51,7 @@ export default abstract class BaseThreeScene<P extends BaseThreeSceneProps, S ex
             this.camera = this.createCamera(next.x, next.y);
             this.renderer = this.createRenderer(next.x, next.y);
             getVRDisplays().then(VRDisplays => {
+                VRDisplays = [];
                 nextState.VRDisplays = VRDisplays;
                 if (VRDisplays.length > 0) {
                     this.renderer.vr.enabled = true;
@@ -76,9 +79,32 @@ export default abstract class BaseThreeScene<P extends BaseThreeSceneProps, S ex
                         <div ref="cameraElement" style={{ transformStyle: 'preserve-3d' }}></div>
                     </div>
                 </div>
+                <div id="menu">
+                    <button id="fullscreen" onClick={this.fullscreen}>
+                        {window.document.fullscreenElement ? 'WINDOW' : 'FULLSCREEN'}
+                    </button>
+                    <button id="gui" onClick={this.enableGui}>
+                        GUI
+                    </button>
+                    {/* <button id="vrbutton">VR OFF</button> */}
+                </div>
             </>
         );
     }
+
+    private fullscreen = () => {
+        if (!window.document.fullscreenElement) {
+            const requestFullScreen = window.document.documentElement.requestFullscreen;
+            requestFullScreen.call(window.document.documentElement);
+            this.setState({ isFullscrren: true });
+        } else {
+            const cancelFullScreen = window.document.exitFullscreen;
+            cancelFullScreen.call(window.document);
+            this.setState({ isFullscrren: false });
+        }
+    };
+
+    private enableGui = () => {};
 
     private createVrButton = () => {
         const container = document.getElementById('container') as HTMLDivElement;
@@ -118,10 +144,11 @@ export default abstract class BaseThreeScene<P extends BaseThreeSceneProps, S ex
     protected abstract onCreate(): void;
 
     makeGui = () => {
+        return;
         this.gui = new GUIVR.create('OrbitControls');
         GUIVR.enableMouse(this.camera);
         this.gui.position.set(0, 20, 0);
-        this.gui.scale.set(50, 50, 50);
+        this.gui.scale.set(30, 30, 30);
         this.scene.add(this.gui);
         //this.gui.add(this.camera, 'castShadow');
         this.gui

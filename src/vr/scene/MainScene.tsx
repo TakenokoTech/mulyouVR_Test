@@ -1,4 +1,5 @@
 import React from 'react';
+import ReactDOM from 'react-dom';
 import * as THREE from 'three';
 import { SVGLoader } from 'three/examples/jsm/loaders/SVGLoader.js';
 
@@ -28,8 +29,8 @@ export default class MainScene extends BaseThreeScene<MainSceneProps, MainSceneS
         const prev = this.props.store.screenSize;
         const next = nextProps.store.screenSize;
         if (prev.x != next.x || prev.y != next.y) {
-            this.camera.position.y = -80;
-            this.camera.position.z = 60;
+            this.camera.position.y = -100;
+            this.camera.position.z = 50;
         }
 
         return s;
@@ -165,6 +166,7 @@ export default class MainScene extends BaseThreeScene<MainSceneProps, MainSceneS
             */
         }
         {
+            /*
             var element = document.createElement('div') as HTMLDivElement;
             element.id = 'sample';
             element.style.width = 10 + 'px';
@@ -175,6 +177,33 @@ export default class MainScene extends BaseThreeScene<MainSceneProps, MainSceneS
             var object = new Element3DObject(element);
             object.position.copy(new THREE.Vector3(0, 0, 0));
             object.rotation.copy(new THREE.Euler(45 * THREE.Math.DEG2RAD, 45 * THREE.Math.DEG2RAD, 0));
+            this.scene.add(object);
+            */
+        }
+        {
+            const dom = (
+                <div>
+                    <iframe
+                        width={1920 / 4}
+                        height={1080 / 4}
+                        src="https://www.youtube.com/embed/Wtn7RqAH5S8"
+                        allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
+                    />
+                    <iframe
+                        width={1920 / 4}
+                        height={1080 / 4}
+                        src="https://www.youtube.com/embed/Wtn7RqAH5S8"
+                        allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
+                    />
+                </div>
+            );
+            var element = document.createElement('div') as HTMLDivElement;
+            element.id = '__youtube';
+            ReactDOM.render(dom, element);
+            const object = new Element3DObject(element);
+            object.scale.set(0.3, 0.3, 0.3);
+            object.position.copy(new THREE.Vector3(0, 0, -300));
+            // object.rotation.copy(new THREE.Euler(45 * THREE.Math.DEG2RAD, 45 * THREE.Math.DEG2RAD, 0));
             this.scene.add(object);
         }
     };
