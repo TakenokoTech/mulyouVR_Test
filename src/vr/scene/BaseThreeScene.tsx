@@ -19,6 +19,7 @@ export interface BaseThreeSceneProps {
 export interface BaseThreeSceneState {
     VRDisplays: VRDisplay[];
     isFullscrren: boolean;
+    visibleGui: boolean;
 }
 
 export default abstract class BaseThreeScene<P extends BaseThreeSceneProps, S extends BaseThreeSceneState> extends React.Component<P, S> {
@@ -29,7 +30,7 @@ export default abstract class BaseThreeScene<P extends BaseThreeSceneProps, S ex
 
     protected time = 0;
     protected hierarchy: { [key: string]: THREE.Object3D[] } = {};
-    private gui: Object3D;
+    private gui: THREE.Object3D = new THREE.Object3D();
 
     constructor(props: P) {
         super(props);
@@ -66,6 +67,7 @@ export default abstract class BaseThreeScene<P extends BaseThreeSceneProps, S ex
             this.onCreate();
             this.renderer.setAnimationLoop(this.onUpdate);
         }
+        this.gui.visible = nextState.visibleGui;
         return true;
     }
 
@@ -104,7 +106,9 @@ export default abstract class BaseThreeScene<P extends BaseThreeSceneProps, S ex
         }
     };
 
-    private enableGui = () => {};
+    private enableGui = () => {
+        this.setState({ visibleGui: !this.state.visibleGui });
+    };
 
     private createVrButton = () => {
         const container = document.getElementById('container') as HTMLDivElement;
@@ -144,11 +148,11 @@ export default abstract class BaseThreeScene<P extends BaseThreeSceneProps, S ex
     protected abstract onCreate(): void;
 
     makeGui = () => {
-        return;
         this.gui = new GUIVR.create('OrbitControls');
         GUIVR.enableMouse(this.camera);
         this.gui.position.set(0, 20, 0);
         this.gui.scale.set(30, 30, 30);
+        this.gui.visible = this.state.visibleGui || false;
         this.scene.add(this.gui);
         //this.gui.add(this.camera, 'castShadow');
         this.gui
