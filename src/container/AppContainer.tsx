@@ -7,6 +7,7 @@ import { domSize } from '../extension';
 import { StoreState } from '../store/types';
 import Point from '../utils/Point';
 import MainScene from '../vr/scene/MainScene';
+import TestScene from '../vr/scene/TestScene';
 import { MapDispatchProps } from './BindingAppContainer';
 
 interface AppContainerProps extends MapDispatchProps, StoreState {

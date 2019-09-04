@@ -148,6 +148,7 @@ export default abstract class BaseThreeScene<P extends BaseThreeSceneProps, S ex
     protected abstract onCreate(): void;
 
     makeGui = () => {
+        console.log('makeGui');
         this.gui = new GUIVR.create('OrbitControls');
         GUIVR.enableMouse(this.camera);
         this.gui.position.set(0, 20, 0);
