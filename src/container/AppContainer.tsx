@@ -3,10 +3,11 @@ import './AppContainer.css';
 import { ParsedQuery } from 'query-string';
 import React from 'react';
 
+import MainScene from '../aframe/scene/MainScene';
 import { domSize } from '../extension';
 import { StoreState } from '../store/types';
-import MainScene from '../three/scene/MainScene';
-import TestScene from '../three/scene/TestScene';
+// import MainScene from '../three/scene/MainScene';
+// import TestScene from '../three/scene/TestScene';
 import Point from '../utils/Point';
 import { MapDispatchProps } from './BindingAppContainer';
 

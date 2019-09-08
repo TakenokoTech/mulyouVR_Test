@@ -3,6 +3,7 @@ import ReactDOM from 'react-dom';
 import * as THREE from 'three';
 
 window.THREE = THREE;
+window.THREE.DRACOLoader = { setDecoderPath: () => {} };
 
 export const GUIVR = require('datguivr').default;
 
