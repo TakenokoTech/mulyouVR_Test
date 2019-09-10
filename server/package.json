@@ -1,0 +1,26 @@
+{
+    "name": "server",
+    "version": "1.0.0",
+    "description": "",
+    "main": "index.js",
+    "scripts": {
+        "start": "npx tsc && node dist/index.js",
+        "test": "echo \"Error: no test specified\" && exit 1"
+    },
+    "author": "",
+    "license": "ISC",
+    "devDependencies": {
+        "@types/cors": "^2.8.6",
+        "@types/express": "^4.17.1",
+        "@types/nedb": "^1.8.9",
+        "@types/youtube-dl": "^1.12.2",
+        "cors": "^2.8.5",
+        "nedb": "^1.8.0",
+        "typescript": "^3.6.2",
+        "youtube-dl": "^2.0.1"
+    },
+    "dependencies": {
+        "@types/node": "^12.7.4",
+        "express": "^4.17.1"
+    }
+}
