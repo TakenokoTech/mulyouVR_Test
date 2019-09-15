@@ -1,3 +1,4 @@
+import { exec } from 'child_process';
 import express, { Request, Response } from 'express';
 import fs from 'fs';
 import youtubeDL from 'youtube-dl';
@@ -93,8 +94,8 @@ export function GetDownload(req: Request, res: Response) {
             { uuid: req.query.uuid, videoid: result.id, expires: DownloadRepository.expires() },
             true,
         );
-        // result.url = `http://${req.headers.host}` + `/video/${result.id}.${result.ext}`;
-        result.url = `http://192.168.0.106:8000` + `/${result.id}.${result.ext}`;
+        result.url = `http://${req.headers.host}` + `/video/${result.id}.${result.ext}`;
+        // result.url = `http://192.168.0.106:8000` + `/${result.id}.${result.ext}`;
 
         console.log('200. ', result.id);
         res.status(200).json(result);
@@ -103,4 +104,18 @@ export function GetDownload(req: Request, res: Response) {
 
 function isError(arg: any): arg is ErrorResult {
     return arg !== null && typeof arg === 'object' && typeof arg.message === 'string';
+}
+
+function m3u8() {
+    console.log(exec);
+    const v = 'MEFCNKjT5k8';
+    const ffmpeg = `${__dirname}/../ffmpeg/bin/ffmpeg.exe`;
+    const mp4File = `${__dirname}/tmp/${v}.mp4`;
+    const tsFile = `${__dirname}/tmp/${v}/${v}%3d.ts`;
+    const m3u8File = `${__dirname}/tmp/${v}/${v}.m3u8`;
+    const cmd = `${ffmpeg} -i ${mp4File} -c:v copy -c:a copy -f hls -hls_time 9 -hls_playlist_type vod -hls_segment_filename "${tsFile}" ${m3u8File}`;
+    exec(cmd, (err, stdout, stderr) => {
+        if (err) console.log(err);
+        console.log(stdout);
+    });
 }

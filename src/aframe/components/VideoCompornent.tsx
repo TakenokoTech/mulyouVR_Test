@@ -17,6 +17,7 @@ interface VideoCompornentProps {
 
 interface VideoCompornentState {
     canplaythrough: boolean;
+    muted: boolean;
 }
 
 export default class VideoCompornent extends Component<VideoCompornentProps, VideoCompornentState> {
@@ -26,7 +27,7 @@ export default class VideoCompornent extends Component<VideoCompornentProps, Vid
 
     constructor(props: VideoCompornentProps) {
         super(props);
-        this.state = { canplaythrough: false };
+        this.state = { canplaythrough: false, muted: true };
     }
 
     componentDidMount() {
@@ -49,6 +50,7 @@ export default class VideoCompornent extends Component<VideoCompornentProps, Vid
             height: this.props.height,
             position: this.props.position || { x: 0, y: 1.6, z: -5 },
             rotation: this.props.rotation || Vector3(0, 0, 0),
+            color: this.state.muted ? '#999' : '#FFF',
         };
         const animation = {
             // animation__rotate: { property: 'rotation', dur: 5000, loop: true, to: '315 315 315' },
@@ -58,14 +60,15 @@ export default class VideoCompornent extends Component<VideoCompornentProps, Vid
             click: () => {
                 const v = this.refs.v as HTMLVideoElement;
                 v.play();
+                v.muted = !v.muted;
                 this.props.click && this.props.click();
+                this.setState({ muted: v.muted });
             },
         };
-        console.log(design);
         return (
             <>
                 <Entity primitive="a-assets" timeout={'10000'} loaded={e => console.log('loaded', e)}>
-                    <video id={videoId} ref="v" src={this.props.src} autoPlay={true} crossOrigin="anonymous" />
+                    <video id={videoId} ref="v" src={this.props.src} autoPlay={true} crossOrigin="anonymous" muted={true} />
                 </Entity>
                 {this.state.canplaythrough ? (
                     <Entity id={id} primitive="a-video" ref="a" src={`#${videoId}`} {...design} {...animation} events={events} {...this.props.option} />
