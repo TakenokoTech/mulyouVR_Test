@@ -4,6 +4,7 @@ import { ParsedQuery } from 'query-string';
 import React from 'react';
 
 import MainScene from '../aframe/scene/MainScene';
+import YoutubeScene from '../aframe/scene/YoutubeScene';
 import { domSize } from '../extension';
 import { StoreState } from '../store/types';
 // import MainScene from '../three/scene/MainScene';
@@ -36,7 +37,8 @@ export class AppContainer extends React.Component<AppContainerProps, AppContaine
     render() {
         return (
             <div id="container" className="app-container" ref="frame" style={{ position: 'relative', width: '100%', height: '100%' }}>
-                <MainScene id="vr-canvas-theater" store={this.props} resize={this.resize} />
+                {/* <MainScene id="vr-canvas-theater" store={this.props} resize={this.resize} /> */}
+                <YoutubeScene id="vr-canvas-theater" store={this.props} resize={this.resize} />
                 {/* <TestScene id="vr-canvas-test" store={this.props} resize={this.resize} /> */}
                 {/* <div id="vr-overlay" style={{ position: 'relative' }} /> */}
             </div>

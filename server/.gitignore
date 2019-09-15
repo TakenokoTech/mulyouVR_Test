@@ -1,3 +1,4 @@
 dist/
 !dist/tmp/.gitkeep
 node_modules/
+ffmpeg/

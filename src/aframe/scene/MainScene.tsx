@@ -7,9 +7,9 @@ import 'aframe-physics-system';
 import { Entity, Scene } from 'aframe-react';
 import React from 'react';
 
-import BoxCompornent from '../../components/BoxCompornent';
-import HTMLCompornent from '../../components/HTMLComponent';
 import { StoreState } from '../../store/types';
+import BoxCompornent from '../components/BoxCompornent';
+import HTMLCompornent from '../components/HTMLComponent';
 
 interface MainSceneProps {
     id: string;

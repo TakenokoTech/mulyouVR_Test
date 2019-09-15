@@ -4,6 +4,8 @@ import youtubeDL from 'youtube-dl';
 
 import DownloadRepository from './DownloadRepository';
 
+const videoState: { [key: string]: Promise<DownloadResult | ErrorResult> } = {};
+
 export interface DownloadResult {
     id: string;
     url: string;
@@ -13,8 +15,19 @@ export interface DownloadResult {
     height: number;
 }
 
-async function download(req: Request): Promise<DownloadResult> {
-    return new Promise(async resolve => {
+export interface ErrorResult {
+    message: string;
+}
+
+async function download(req: Request): Promise<DownloadResult | ErrorResult> {
+    console.log(`download. v:${req.query.v}`);
+
+    if (videoState[req.query.v]) {
+        console.log(`pending... ${req.query.v}`);
+        return videoState[req.query.v];
+    }
+
+    videoState[req.query.v] = new Promise(async resolve => {
         const videoID = req.query.v;
         const movieFilePath = `${__dirname}/tmp/${videoID}.mp4`;
         const jsonFilePath = `${__dirname}/tmp/${videoID}.json`;
@@ -28,7 +41,7 @@ async function download(req: Request): Promise<DownloadResult> {
 
         youtubeDL(`http://www.youtube.com/watch?v=${videoID}`, ['--format=18'], { cwd: __dirname })
             .on('info', (info: any) => {
-                console.log('Download started');
+                console.log('Download started', info.title);
                 result.ext = info.ext;
                 result.width = info.width;
                 result.height = info.height;
@@ -46,27 +59,48 @@ async function download(req: Request): Promise<DownloadResult> {
                     resolve(result);
                 });
             })
+            .on('error', err => {
+                fs.unlinkSync(movieFilePath);
+                resolve({ message: `${err}` });
+            })
             .pipe(fs.createWriteStream(movieFilePath));
     });
+
+    return videoState[req.query.v];
 }
 
 const isExist = (filePath: string) =>
-    new Promise<Boolean>(resolve => {
+    new Promise<number>(resolve => {
         try {
             fs.statSync(filePath);
-            resolve(true);
+            resolve(1);
         } catch (e) {
-            resolve(false);
+            resolve(0);
         }
     });
 
-export async function GetDownload(req: Request, res: Response) {
-    console.log(req.query);
-    const result = await download(req);
-    DownloadRepository.upsert(
-        { uuid: req.query.uuid, videoid: result.id },
-        { uuid: req.query.uuid, videoid: result.id, expires: DownloadRepository.expires() },
-        true,
-    );
-    res.status(200).json(result);
+export function GetDownload(req: Request, res: Response) {
+    console.log('GetDownload. ', req.query);
+    (async () => {
+        const result = await download(req);
+        if (isError(result)) {
+            console.log('400. ', result.message);
+            res.status(400).json(result);
+            return;
+        }
+        DownloadRepository.upsert(
+            { uuid: req.query.uuid, videoid: result.id },
+            { uuid: req.query.uuid, videoid: result.id, expires: DownloadRepository.expires() },
+            true,
+        );
+        // result.url = `http://${req.headers.host}` + `/video/${result.id}.${result.ext}`;
+        result.url = `http://192.168.0.106:8000` + `/${result.id}.${result.ext}`;
+
+        console.log('200. ', result.id);
+        res.status(200).json(result);
+    })();
+}
+
+function isError(arg: any): arg is ErrorResult {
+    return arg !== null && typeof arg === 'object' && typeof arg.message === 'string';
 }

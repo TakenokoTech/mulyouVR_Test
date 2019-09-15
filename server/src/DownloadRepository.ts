@@ -13,7 +13,7 @@ class DownloadRepository {
         return new Promise(resolve => {
             db.find(query, (err: Error, newEntity: DownloadEntity[]) => {
                 if (err) console.error(err);
-                console.log(`select. size = ${newEntity.length}`);
+                // console.log(`select. size = ${newEntity.length}`);
                 resolve(newEntity);
             });
         });
@@ -23,7 +23,7 @@ class DownloadRepository {
         return new Promise(resolve => {
             db.insert(entity, (err: Error, newEntity: DownloadEntity[]) => {
                 if (err) console.error(err);
-                console.log(`insert. size = ${newEntity.length}`);
+                // console.log(`insert. size = ${newEntity.length}`);
                 resolve(newEntity);
             });
         });
@@ -33,7 +33,7 @@ class DownloadRepository {
         return new Promise(resolve => {
             db.update(query, updateQuery, { upsert: upsert, multi: true }, (err: Error, num: number) => {
                 if (err) console.error(err);
-                console.log(`upsert. size = ${num}`);
+                // console.log(`upsert. size = ${num}`);
                 resolve(num);
             });
         });
@@ -43,7 +43,7 @@ class DownloadRepository {
         return new Promise(resolve => {
             db.remove(query, { multi: true }, (err: Error, num: number) => {
                 if (err) console.error(err);
-                console.log(`delete. size = ${num}`);
+                //console.log(`delete. size = ${num}`);
                 resolve(num);
             });
         });

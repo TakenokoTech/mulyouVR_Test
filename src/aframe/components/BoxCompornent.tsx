@@ -1,7 +1,7 @@
 import { Entity } from 'aframe-react';
 import React, { Component } from 'react';
 
-import { Vector3 } from '../aframe/util';
+import { Vector3 } from '../util';
 
 interface BoxCompornentProps {
     id: string;

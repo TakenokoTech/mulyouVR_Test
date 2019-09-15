@@ -1,7 +1,7 @@
 import { Entity } from 'aframe-react';
 import React, { Component } from 'react';
 
-import { Vector3 } from '../aframe/util';
+import { Vector3 } from '../util';
 
 const transparent = '#F8F8F8';
 const fps = 30;

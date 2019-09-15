@@ -1,3 +1,5 @@
+import { type } from 'os';
+
 declare module 'aframe-react' {
     const Entity: any;
     const Scene: any;
@@ -14,3 +16,5 @@ declare module JSX {
         'a-text': any;
     }
 }
+
+type Vec = { x: number; y: number; z: number };

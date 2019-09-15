@@ -80,13 +80,13 @@
         "three-vreffect-module": "^2.2.0",
         "ts-node": "^8.3.0",
         "typescript": "^3.5.3",
+        "uuid": "^3.3.3",
         "web-animations-js": "^2.3.2",
         "webpack": "^4.38.0",
         "webpack-cli": "^3.3.6",
         "webpack-dev-server": "^3.7.2",
         "webvr-boilerplate": "^0.5.0",
-        "webvr-polyfill": "^0.10.10",
-        "youtube-dl": "^2.0.1"
+        "webvr-polyfill": "^0.10.10"
     },
     "dependencies": {
         "@fortawesome/fontawesome-svg-core": "^1.2.21",

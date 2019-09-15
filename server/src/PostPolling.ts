@@ -11,6 +11,6 @@ export async function PostPolling(req: Request, res: Response, next: NextFunctio
 }
 
 export async function DeletePolling() {
-    console.log('\nDeletePolling');
+    // console.log('\nDeletePolling');
     await DownloadRepository.select({ expires: { $lt: DownloadRepository.nowTime() } });
 }
