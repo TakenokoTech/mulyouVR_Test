@@ -6,8 +6,11 @@ import videojs from 'video.js';
 import { Vec } from '../aframe-react';
 import { Vector3 } from '../util';
 
+export const POLLLING_INVERVAL = 10000; // 10s
+
 interface VideoCompornentProps {
     id: string;
+    videoId: string;
     src: string;
     width?: number;
     height?: number;
@@ -20,6 +23,7 @@ interface VideoCompornentProps {
 interface VideoCompornentState {
     id: string;
     videoId: string;
+    sourceId: string;
     canplaythrough: boolean;
     muted: boolean;
 }
@@ -33,9 +37,11 @@ export default class VideoCompornent extends Component<VideoCompornentProps, Vid
         super(props);
         const id = 'video-' + (this.props.id || '');
         const videoId = `assets-${id}`;
+        const sourceId = `source-${id}`;
         this.state = {
             id,
             videoId,
+            sourceId,
             canplaythrough: false,
             muted: true,
         };
@@ -43,15 +49,34 @@ export default class VideoCompornent extends Component<VideoCompornentProps, Vid
 
     componentDidMount() {
         this.setState(this.defaultState);
-        videojs(this.state.videoId).play();
+        this.check();
     }
 
     componentDidUpdate() {
         const v = this.refs.v as HTMLVideoElement;
         v.addEventListener('canplaythrough', e => this.setState({ canplaythrough: true }));
-        // const videoEvent = [/*'progress',*/ 'loadeddata', 'loadedmetadata', 'canplay', 'canplaythrough', 'error'];
+        // const videoEvent = [/*'progress', 'loadeddata', 'loadedmetadata', 'canplay',*/ 'canplaythrough', 'error'];
         // videoEvent.forEach((l: string) => v.addEventListener(l, e => console.log(e)));
+
+        if (this.refs.a) {
+            this.refs.a.el.addEventListener('mouseenter', () => {
+                v.muted = false;
+                this.setState({ muted: v.muted });
+            });
+            this.refs.a.el.addEventListener('mouseleave', () => {
+                v.muted = true;
+                this.setState({ muted: v.muted });
+            });
+        }
     }
+
+    check = async () => {
+        const response = await fetch(`http://${document.domain}:3000/check?v=${this.props.videoId}`);
+        const json = await response.json();
+        if (!json.ready) setTimeout(this.check, POLLLING_INVERVAL);
+        else videojs(this.state.videoId).play();
+        // console.log('check', +response.status);
+    };
 
     render() {
         const id = this.state.id;
@@ -66,19 +91,19 @@ export default class VideoCompornent extends Component<VideoCompornentProps, Vid
         };
         const animation = {};
         const events = {
-            click: () => {
-                const v = this.refs.v as HTMLVideoElement;
-                v.play();
-                v.muted = !v.muted;
-                this.props.click && this.props.click();
-                this.setState({ muted: v.muted });
-            },
+            // click: () => {
+            //     const v = this.refs.v as HTMLVideoElement;
+            //     v.play();
+            //     v.muted = !v.muted;
+            //     this.props.click && this.props.click();
+            //     this.setState({ muted: v.muted });
+            // },
         };
         return (
             <>
                 <Entity primitive="a-assets" timeout={'10000'} loaded={e => console.log('loaded', e)}>
                     <video id={videoId} ref="v" className="video-js" autoPlay={true} crossOrigin="anonymous" muted={true}>
-                        <source src={this.props.src} type="application/x-mpegURL" />
+                        <source id={this.state.sourceId} src={this.props.src} type="application/x-mpegURL" />
                     </video>
                 </Entity>
                 {this.state.canplaythrough ? (

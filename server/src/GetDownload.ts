@@ -4,6 +4,8 @@ import fs from 'fs';
 import youtubeDL from 'youtube-dl';
 
 import DownloadRepository from './DownloadRepository';
+import { File } from './utils/File';
+import { Log } from './utils/Log';
 
 const videoState: { [key: string]: Promise<DownloadResult | ErrorResult> } = {};
 
@@ -21,45 +23,43 @@ export interface ErrorResult {
     message: string;
 }
 
-async function downloadMP4(req: Request): Promise<DownloadResult | ErrorResult> {
-    console.log(`download. v:${req.query.v}`);
-
-    if (videoState[req.query.v]) {
-        console.log(`pending... ${req.query.v}`);
-        return videoState[req.query.v];
+async function downloadMP4(videoID: string /*, req: Request*/, host: string): Promise<DownloadResult | ErrorResult> {
+    Log.info(`downloadMP4. v:${videoID}`);
+    if (videoState[videoID]) {
+        Log.info(`pending... ${videoID}`);
+        return videoState[videoID];
     }
 
-    videoState[req.query.v] = new Promise(async resolve => {
-        const videoID = req.query.v;
+    videoState[videoID] = new Promise(async resolve => {
         const movieFilePath = `${__dirname}/tmp/${videoID}.mp4`;
         const jsonFilePath = `${__dirname}/tmp/${videoID}.json`;
         const result: DownloadResult = { id: videoID, url: '', hlsUrl: '', ext: '', data: '', width: 0, height: 0 };
 
-        if ((await isExist(movieFilePath)) && (await isExist(jsonFilePath))) {
+        if ((await File.isExist(movieFilePath)) && (await File.isExist(jsonFilePath))) {
             const result = JSON.parse(fs.readFileSync(jsonFilePath, 'utf8'));
+            await downloadM3U8(result.id);
             resolve(result);
             return;
         }
-
+        // result.url = `http://${host}/video/${result.id}.${result.ext}`;
         youtubeDL(`http://www.youtube.com/watch?v=${videoID}`, ['--format=18'], { cwd: __dirname })
             .on('info', (info: any) => {
-                console.log('Download started', info.title);
+                Log.info('Download started', info.title);
                 result.ext = info.ext;
                 result.width = info.width;
                 result.height = info.height;
-                // console.log(info);
+                resolve(result);
             })
             .on('complete', (info: any) => {
-                console.log('filename: ' + info._filename + ' already downloaded.');
+                Log.info('filename: ' + info._filename + ' already downloaded.');
             })
             .on('end', (info: any) => {
-                console.log('finished downloading!');
-                result.url = `http://${req.headers.host}/video/${result.id}.${result.ext}`;
+                Log.info('finished downloading!');
                 fs.writeFileSync(jsonFilePath, JSON.stringify(result, null, '    '));
                 fs.createReadStream(movieFilePath, 'utf8').on('data', data => {
                     result.data = data;
-                    resolve(result);
                 });
+                downloadM3U8(result.id);
             })
             .on('error', err => {
                 fs.unlinkSync(movieFilePath);
@@ -68,59 +68,49 @@ async function downloadMP4(req: Request): Promise<DownloadResult | ErrorResult> 
             .pipe(fs.createWriteStream(movieFilePath));
     });
 
-    return videoState[req.query.v];
+    return videoState[videoID];
 }
 
-function downloadM3U8(v: string): Promise<string> {
+function downloadM3U8(videoID: string): Promise<string> {
+    Log.info(`downloadM3U8. v:${videoID}`);
     const ffmpeg = `${__dirname}/../ffmpeg/bin/ffmpeg.exe`;
-    const rootDir = `${__dirname}/tmp/${v}`;
-    const mp4File = `${__dirname}/tmp/${v}.mp4`;
+    const rootDir = `${__dirname}/tmp/${videoID}`;
+    const mp4File = `${__dirname}/tmp/${videoID}.mp4`;
     const tsFile = `${rootDir}/%3d.ts`;
     const m3u8File = `${rootDir}/index.m3u8`;
-    const cmd = `${ffmpeg} -i ${mp4File} -c:v copy -c:a copy -f hls -hls_time 20 -hls_playlist_type vod -hls_segment_filename "${tsFile}" ${m3u8File}`;
+    const cmd = `${ffmpeg} -i ${mp4File} -c:v copy -c:a copy -f hls -hls_time 10 -hls_playlist_type vod -hls_segment_filename "${tsFile}" ${m3u8File}`;
     return new Promise<string>(async (resolve, reject) => {
-        if (await isExist(m3u8File)) {
-            resolve(`${v}/index.m3u8`);
+        if (await File.isExist(m3u8File)) {
+            resolve(`${videoID}/index.m3u8`);
             return;
         }
-        if (!(await isExist(rootDir))) {
+        if (!(await File.isExist(rootDir))) {
             fs.mkdirSync(rootDir);
         }
         exec(cmd, (err, stdout, stderr) => {
             if (err) reject(err);
-            else resolve(`${v}/index.m3u8`);
+            else resolve(`${videoID}/index.m3u8`);
         });
     });
 }
 
-const isExist = (filePath: string) =>
-    new Promise<number>(resolve => {
-        try {
-            fs.statSync(filePath);
-            resolve(1);
-        } catch (e) {
-            resolve(0);
-        }
-    });
-
 export function GetDownload(req: Request, res: Response) {
-    console.log('GetDownload. ', req.query);
+    Log.info('GetDownload. ', req.query);
     (async () => {
-        const result = await downloadMP4(req);
+        const result = await downloadMP4(req.query.v, req.headers.host || '');
         if (isError(result)) {
-            console.log('400. ', result.message);
+            Log.info('400. ', result.message);
             res.status(400).json(result);
             return;
         }
-        const hlsUrl = await downloadM3U8(result.id);
         DownloadRepository.upsert(
             { uuid: req.query.uuid, videoid: result.id },
             { uuid: req.query.uuid, videoid: result.id, expires: DownloadRepository.expires() },
             true,
         );
         result.url = `http://${req.headers.host}` + `/video/${result.id}.${result.ext}`;
-        result.hlsUrl = `http://${req.headers.host}` + `/video/${hlsUrl}`;
-        console.log('200. ', result.id);
+        result.hlsUrl = `http://${req.headers.host}` + `/video/${result.id}/index.m3u8`;
+        Log.info('200. ', result);
         res.status(200).json(result);
     })();
 }
@@ -128,5 +118,3 @@ export function GetDownload(req: Request, res: Response) {
 function isError(arg: any): arg is ErrorResult {
     return arg !== null && typeof arg === 'object' && typeof arg.message === 'string';
 }
-
-// m3u8('MEFCNKjT5k8');
