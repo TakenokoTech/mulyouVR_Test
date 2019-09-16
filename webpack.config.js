@@ -35,7 +35,7 @@ const development = {
     },
     plugins: [
         new HtmlWebpackPlugin({ template: "./static/index.html" }),
-        // new CopyWebpackPlugin([{ from: ".", to: ".", ignore: ["!*.html"] }], { context: "static" }),
+        new CopyWebpackPlugin([{ from: ".", to: ".", ignore: ["!*.html"] }], { context: "static" }),
         new CopyWebpackPlugin([{ from: ".", to: "./css", ignore: ["!*.css"] }], { context: "static/css" }),
         // new CopyWebpackPlugin([{ from: ".", to: "./js", ignore: ["!*.js"] }], { context: "static/js" }),
         new CopyWebpackPlugin([{ from: ".", to: "./assets", ignore: ["!*"] }], { context: "static/assets" }),

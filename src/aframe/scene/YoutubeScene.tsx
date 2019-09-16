@@ -57,7 +57,7 @@ export default class YoutubeScene extends React.Component<YoutubeDLProps, Youtub
                 <Scene ref="scene" id="scene" physics="debug: false">
                     {/* <BoxCompornent id="____" click={this.onClick} /> */}
                     {this.state.video.map((v, i) => {
-                        return <VideoCompornent id={v.id} key={i} ref={`y_${i}`} src={v.url} click={this.onClick} {...this.calcPos(i, v)} />;
+                        return <VideoCompornent id={`${v.id}_${i}`} key={i} ref={`y_${i}`} src={v.hlsUrl} click={this.onClick} {...this.calcPos(i, v)} />;
                     })}
                     <CameraCompornent id="___camera" />
                     <SkyCompornent id="____sky" color={'#000'} />
@@ -95,7 +95,7 @@ export default class YoutubeScene extends React.Component<YoutubeDLProps, Youtub
     protected onUpdate = () => {};
 
     protected onCreate = async () => {
-        const _list = [
+        const list = [
             'g1oyJi4vD84',
             'hDf4HBxfESQ',
             '_R8xW5mmoy0',
@@ -126,42 +126,9 @@ export default class YoutubeScene extends React.Component<YoutubeDLProps, Youtub
             // 'cPT2IZdn4nc',
         ];
 
-        const list = [
-            'AZWYH8nfZrI',
-            'H3tpUA45v7w',
-            'H3tpUA45v7w',
-            'AZWYH8nfZrI',
-            'AZWYH8nfZrI',
-            'H3tpUA45v7w',
-            'H3tpUA45v7w',
-            'AZWYH8nfZrI',
-            'AZWYH8nfZrI',
-            'H3tpUA45v7w',
-            'AZWYH8nfZrI',
-            'H3tpUA45v7w',
-            'AZWYH8nfZrI',
-            'H3tpUA45v7w',
-            'AZWYH8nfZrI',
-            'H3tpUA45v7w',
-            'AZWYH8nfZrI',
-            'H3tpUA45v7w',
-            'AZWYH8nfZrI',
-            'H3tpUA45v7w',
-            'AZWYH8nfZrI',
-            'H3tpUA45v7w',
-            'AZWYH8nfZrI',
-            'H3tpUA45v7w',
-            'AZWYH8nfZrI',
-            'H3tpUA45v7w',
-            'AZWYH8nfZrI',
-            'H3tpUA45v7w',
-            'AZWYH8nfZrI',
-        ];
-
         const promise: Promise<DownloadResult>[] = [];
-        for (const v of list) promise.push(this.loadVideo(v));
+        for (const v in list) promise.push(this.loadVideo(list[v]));
         Promise.all(promise).then(values => {
-            console.log('all...');
             this.setState({ video: values });
         });
 
@@ -169,20 +136,13 @@ export default class YoutubeScene extends React.Component<YoutubeDLProps, Youtub
     };
 
     private async loadVideo(v: string): Promise<DownloadResult> {
-        // console.log(`loadVideo start. ${v}`);
+        console.log(`loadVideo start. ${v}`);
         return fetch(`http://${document.domain}:3000/download?uuid=${uuid}&v=${v}`)
-            .then(result => {
-                return result.json();
-            })
-            .then(v => {
-                // this.setState({ video: this.state.video.concat([v]) });
-                // console.log(`loadVideo end. `, v);
-                return v as DownloadResult;
-            });
+            .then(result => result.json())
+            .then(v => v as DownloadResult);
     }
 
     private async polling() {
-        // console.log(result.status);
         setTimeout(this.polling, POLLLING_INVERVAL);
     }
 

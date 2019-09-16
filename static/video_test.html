@@ -1,0 +1,77 @@
+<html>
+    <head>
+        <title>Video Test</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <meta name="theme-color" content="#3bcfd4" />
+        <link
+            rel="stylesheet"
+            href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+            integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T"
+            crossorigin="anonymous"
+        />
+
+        <link href="https://vjs.zencdn.net/7.6.0/video-js.css" rel="stylesheet" />
+        <script src="https://vjs.zencdn.net/ie8/1.1.2/videojs-ie8.min.js"></script>
+        <!-- <link rel="stylesheet" type="text/css" href="css/style.css" /> -->
+        <style type="text/css">
+            .flex {
+                display: flex;
+                flex-wrap: nowrap;
+                max-height: 200px;
+            }
+            .flex > video {
+                min-width: 8%;
+                flex-basis: 25%;
+                background: #fff;
+                font-size: 64px;
+                text-align: center;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="flex">
+            <video id="test" class="video-js" controls autoplay muted>
+                <source src="http://192.168.3.2:3000/video/MEFCNKjT5k8/index.m3u8" type="application/x-mpegURL" />
+            </video>
+            <!-- <video src="http://localhost:3000/video/hDf4HBxfESQ.mp4" controls autoplay muted></video> -->
+            <!-- <video src="http://localhost:3000/video/_R8xW5mmoy0.mp4" controls autoplay muted></video> -->
+            <!-- <video src="http://localhost:3000/video/t2gktD1r-7w.mp4" controls autoplay muted></video> -->
+        </div>
+        <!-- <div class="flex">
+            <video src="http://localhost:3000/video/rqWbGZ_srXE.mp4" controls autoplay muted></video>
+            <video src="http://localhost:3000/video/Lwr8AKMaN9Q.mp4" controls autoplay muted></video>
+            <video src="http://localhost:3000/video/W33QM9VGkCc.mp4" controls autoplay muted></video>
+            <video src="http://localhost:3000/video/c1wvibT43WI.mp4" controls autoplay muted></video>
+        </div>
+        <div class="flex">
+            <video src="http://localhost:3000/video/MjmU-GTWpqg.mp4" controls autoplay muted></video>
+            <video src="http://localhost:3000/video/n6d6yhhz2pY.mp4" controls autoplay muted></video>
+            <video src="http://localhost:3000/video/cRkfuL3QtVc.mp4" controls autoplay muted></video>
+            <video src="http://localhost:3000/video/1E2uZQx96YI.mp4" controls autoplay muted></video>
+        </div>
+        <div class="flex">
+            <video src="http://localhost:3000/video/xN1ldNFECJo.mp4" controls autoplay muted></video>
+            <video src="http://localhost:3000/video/CPSVydGivAE.mp4" controls autoplay muted></video>
+            <video src="http://localhost:3000/video/xsBdp8ucgf4.mp4" controls autoplay muted></video>
+            <video src="http://localhost:3000/video/MEFCNKjT5k8.mp4" controls autoplay muted></video>
+        </div> -->
+
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+        <script
+            src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"
+            integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
+            crossorigin="anonymous"
+        ></script>
+        <script
+            src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
+            integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
+            crossorigin="anonymous"
+        ></script>
+
+        <script src="https://vjs.zencdn.net/7.6.0/video.js"></script>
+        <script>
+            var player = videojs('test');
+            player.play();
+        </script>
+    </body>
+</html>
