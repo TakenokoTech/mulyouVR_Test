@@ -76,7 +76,7 @@ export default class YoutubeScene extends React.Component<YoutubeDLProps, Youtub
         );
     }
 
-    calcPos(i: number, v: DownloadResult): { width: number; height: number; position: Vec; rotation: Vec } {
+    private calcPos(i: number, v: DownloadResult): { width: number; height: number; position: Vec; rotation: Vec } {
         const maxWidth = 20;
         const width = (16 / v.width) * v.width;
         const height = (16 / v.width) * v.height;
@@ -102,7 +102,7 @@ export default class YoutubeScene extends React.Component<YoutubeDLProps, Youtub
         };
     }
 
-    protected onUpdate = () => {};
+    protected onUpdate = async () => {};
 
     protected onCreate = async () => {
         const list = [
@@ -120,12 +120,13 @@ export default class YoutubeScene extends React.Component<YoutubeDLProps, Youtub
             '1E2uZQx96YI',
             'xN1ldNFECJo',
             'CPSVydGivAE',
-            'xsBdp8ucgf4',
-            'MEFCNKjT5k8',
-            'gtj0hN7HoRM',
-            'oGCgtrPuH_s',
-            'fm3WxmZXsqc',
-            'ujx-czBUd_Y',
+            // 'xsBdp8ucgf4',
+            // 'MEFCNKjT5k8',
+            // 'gtj0hN7HoRM',
+            // 'oGCgtrPuH_s',
+            // 'fm3WxmZXsqc',
+            // 'ujx-czBUd_Y',
+
             // 'lrVCnwJQnGg',
             // 'JJxSpusdY0g',
             // '8d6CI98hOwU',
@@ -142,19 +143,19 @@ export default class YoutubeScene extends React.Component<YoutubeDLProps, Youtub
             this.setState({ video: values });
         });
 
-        setTimeout(this.polling, POLLLING_INVERVAL);
+        this.polling();
     };
 
-    private async loadVideo(v: string): Promise<DownloadResult> {
-        // console.log(`loadVideo start. ${v}`);
+    private loadVideo = async (v: string): Promise<DownloadResult> => {
         return fetch(`http://${document.domain}:3000/download?uuid=${uuid}&v=${v}`)
             .then(result => result.json())
             .then(v => v as DownloadResult);
-    }
+    };
 
-    private async polling() {
+    private polling = async () => {
+        await fetch(`http://${document.domain}:3000/polling?uuid=${uuid}`, { method: 'POST' });
         setTimeout(this.polling, POLLLING_INVERVAL);
-    }
+    };
 
     private onClick = () => {
         console.log('onClick');

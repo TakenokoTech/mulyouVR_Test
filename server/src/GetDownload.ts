@@ -110,7 +110,7 @@ export function GetDownload(req: Request, res: Response) {
         );
         result.url = `http://${req.headers.host}` + `/video/${result.id}.${result.ext}`;
         result.hlsUrl = `http://${req.headers.host}` + `/video/${result.id}/index.m3u8`;
-        Log.info('200. ', result);
+        Log.info('200.\n', result);
         res.status(200).json(result);
     })();
 }

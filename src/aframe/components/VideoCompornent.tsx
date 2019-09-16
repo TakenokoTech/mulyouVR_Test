@@ -53,6 +53,7 @@ export default class VideoCompornent extends Component<VideoCompornentProps, Vid
     }
 
     componentDidUpdate() {
+        console.log('componentDidUpdate');
         const v = this.refs.v as HTMLVideoElement;
         v.addEventListener('canplaythrough', e => this.setState({ canplaythrough: true }));
         // const videoEvent = [/*'progress', 'loadeddata', 'loadedmetadata', 'canplay',*/ 'canplaythrough', 'error'];
@@ -71,14 +72,17 @@ export default class VideoCompornent extends Component<VideoCompornentProps, Vid
     }
 
     check = async () => {
+        console.log('check');
         const response = await fetch(`http://${document.domain}:3000/check?v=${this.props.videoId}`);
         const json = await response.json();
-        if (!json.ready) setTimeout(this.check, POLLLING_INVERVAL);
-        else videojs(this.state.videoId).play();
+        if (json.ready) await videojs(this.state.videoId).play();
+        else setTimeout(this.check, POLLLING_INVERVAL);
+        // console.log(json);
         // console.log('check', +response.status);
     };
 
     render() {
+        console.log('render');
         const id = this.state.id;
         const videoId = this.state.videoId;
         const videoTagId = `#${videoId}_html5_api`;
@@ -103,7 +107,7 @@ export default class VideoCompornent extends Component<VideoCompornentProps, Vid
             <>
                 <Entity primitive="a-assets" timeout={'10000'} loaded={e => console.log('loaded', e)}>
                     <video id={videoId} ref="v" className="video-js" autoPlay={true} crossOrigin="anonymous" muted={true}>
-                        <source id={this.state.sourceId} src={this.props.src} type="application/x-mpegURL" />
+                        <source id={this.state.sourceId} src={`${this.props.src}`} type="application/x-mpegURL" />
                     </video>
                 </Entity>
                 {this.state.canplaythrough ? (
